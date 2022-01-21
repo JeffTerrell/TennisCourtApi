@@ -20,7 +20,7 @@ namespace TennisCourt.Controllers
 
     // GET api/courts (Search parameter: city)
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Court>>> Get(string city, string state, string surfaceType)
+    public async Task<ActionResult<IEnumerable<Court>>> Get(string city, string state, string surfaceType , string sortBy, string sortBy_desc, string sortBy_asc)
     {
       var query = _db.Courts.AsQueryable();
 
@@ -37,6 +37,31 @@ namespace TennisCourt.Controllers
       if (surfaceType != null)
       {
         query = query.Where(entry => entry.SurfaceType == surfaceType);
+      }
+
+      if (sortBy_asc != null)
+      {
+        if (sortBy_asc == "city")
+        {
+          query = query.OrderBy(entry => entry.City);
+        }  
+        if (sortBy_asc == "state")
+        {
+          query = query.OrderBy(entry => entry.State);
+        }
+      }
+
+
+      if (sortBy_desc != null)
+      {
+        if (sortBy_desc == "city")
+        {
+          query = query.OrderByDescending(entry => entry.City);
+        }
+        if (sortBy_desc == "state")
+        {
+          query = query.OrderByDescending(entry => entry.State);
+        }
       }
 
       return await query.ToListAsync();
@@ -103,7 +128,7 @@ namespace TennisCourt.Controllers
       {
         return BadRequest();
       }
-      
+
       _db.Entry(court).State = EntityState.Modified;
 
       try
